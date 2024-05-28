@@ -1,0 +1,25 @@
+{
+  "name": "wow-2024-server",
+  "version": "1.0.0",
+  "description": "the server side component in express for api endpoints with mongodb",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon index.js"
+  },
+  "keywords": [
+    "gdsc",
+    "wow",
+    "2024",
+    "server",
+    "api",
+    "wow-24"
+  ],
+  "author": "Manas Malla",
+  "license": "MIT",
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "mongoose": "^8.4.0",
+    "nodemon": "^3.1.1"
+  }
+}
