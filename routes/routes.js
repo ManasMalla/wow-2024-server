@@ -172,8 +172,8 @@ router.get("/get-attendee-registration/:email", async (req, res) => {
               domain: team_details.domain,
             },
           };
-      return res.status(400).json({
-        status: false,
+      return res.status(200).json({
+        status: true,
         data: result,
       });
     }
