@@ -168,11 +168,21 @@ router.get("/get-attendee-registration/:email", async (req, res) => {
             phone_number: dataToSave.phone_number,
             hackathon: {
               team_lead_name:
-                team_details.team_details.filter((e) => e.team_lead === true)[0]
-                  .first_name +
+                (
+                  await ShortlistedUserModel.findOne({
+                    email: team_details.team_details.filter(
+                      (e) => e.team_lead === true
+                    )[0].email,
+                  })
+                ).first_name +
                 " " +
-                team_details.team_details.filter((e) => e.team_lead === true)[0]
-                  .last_name,
+                (
+                  await ShortlistedUserModel.findOne({
+                    email: team_details.team_details.filter(
+                      (e) => e.team_lead === true
+                    )[0].email,
+                  })
+                ).last_name,
               team_lead_email: team_details.team_details.filter(
                 (e) => e.team_lead === true
               )[0].email,
