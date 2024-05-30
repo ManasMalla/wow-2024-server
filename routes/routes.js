@@ -312,10 +312,13 @@ router.post("/create-attendee-registration", async (req, res) => {
 
 router.get("/get-confirmed-attendees", async (req, res) => {
   try {
-    const attendees = (await AttendeeModel.find()).map(async (attendee) => {
-      return (await ShortlistedUserModel.findOne({ uid: attendee.uid })).email;
+    const attendees = (await AttendeeModel.find()).map((attendee) => {
+      return attendee.uid;
     });
-    res.json({ status: true, data: Array.from(attendees) });
+    const users = (
+      await ShortlistedUserModel.find({ uid: { $in: attendees } })
+    ).map((e) => e.email);
+    res.json({ status: true, data: Array.from(users) });
   } catch (error) {
     res.status(500).json({
       status: false,
