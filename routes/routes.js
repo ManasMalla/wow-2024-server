@@ -307,3 +307,19 @@ router.post("/create-attendee-registration", async (req, res) => {
     res.status(400).json({ status: false, message: error.message });
   }
 });
+
+// API for getting all attendees
+
+router.get("/get-confirmed-attendees", async (req, res) => {
+  try {
+    const attendees = (await AttendeeModel.find()).map(async (attendee) => {
+      return (await ShortlistedUserModel.findOne({ uid: attendee.uid })).email;
+    });
+    res.json({ status: true, data: Array.from(attendees) });
+  } catch (error) {
+    res.status(500).json({
+      status: false,
+      message: `Unable to get data at the moment. Please try again. ${error.message}`,
+    });
+  }
+});
