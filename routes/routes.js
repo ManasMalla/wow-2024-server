@@ -167,25 +167,25 @@ router.get("/get-attendee-registration/:email", async (req, res) => {
             agenda_domain: dataToSave.agenda_domain,
             phone_number: dataToSave.phone_number,
             hackathon: {
-              team_lead_name:
-                (
+              team_lead: {
+                email: team_details.team_details.filter(
+                  (e) => e.team_lead === true
+                )[0].email,
+                first_name: (
                   await ShortlistedUserModel.findOne({
                     email: team_details.team_details.filter(
                       (e) => e.team_lead === true
                     )[0].email,
                   })
-                ).first_name +
-                " " +
-                (
+                ).first_name,
+                last_name: (
                   await ShortlistedUserModel.findOne({
                     email: team_details.team_details.filter(
                       (e) => e.team_lead === true
                     )[0].email,
                   })
                 ).last_name,
-              team_lead_email: team_details.team_details.filter(
-                (e) => e.team_lead === true
-              )[0].email,
+              },
               team_lead: team_details.team_lead,
               team_name: team_details.team_name,
               domain: team_details.domain,
@@ -204,15 +204,27 @@ router.get("/get-attendee-registration/:email", async (req, res) => {
           team_lead: team_details.team_details.filter(
             (e) => e.email === email
           )[0].team_lead,
-          team_lead_email: team_details.team_details.filter(
-            (e) => e.team_lead === true
-          )[0].email,
-          team_lead_name:
-            team_details.team_details.filter((e) => e.team_lead === true)[0]
-              .first_name +
-            " " +
-            team_details.team_details.filter((e) => e.team_lead === true)[0]
-              .last_name,
+
+          team_lead: {
+            email: team_details.team_details.filter(
+              (e) => e.team_lead === true
+            )[0].email,
+            first_name: (
+              await ShortlistedUserModel.findOne({
+                email: team_details.team_details.filter(
+                  (e) => e.team_lead === true
+                )[0].email,
+              })
+            ).first_name,
+            last_name: (
+              await ShortlistedUserModel.findOne({
+                email: team_details.team_details.filter(
+                  (e) => e.team_lead === true
+                )[0].email,
+              })
+            ).last_name,
+          },
+
           team_id: team_details._id,
           team_name: team_details.team_name,
           domain: team_details.domain,
