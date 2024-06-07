@@ -270,7 +270,7 @@ router.post("/create-attendee-registration", async (req, res) => {
       const checkIfAccommodationIsAvailable = await AttendeeModel.find({
         accommodation: true,
       }).countDocuments();
-      if (checkIfAccommodationIsAvailable >= 100) {
+      if (checkIfAccommodationIsAvailable >= 1880) {
         return res.status(400).json({
           status: false,
           message:
