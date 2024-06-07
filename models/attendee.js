@@ -12,8 +12,7 @@ const attendeeSchema = new mongoose.Schema({
   },
   team_id: {
     required: true,
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "team",
+    type: String,
   },
   accommodation: {
     required: true,

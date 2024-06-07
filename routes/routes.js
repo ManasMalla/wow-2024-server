@@ -366,3 +366,158 @@ router.get("/get-confirmed-attendees", async (req, res) => {
     });
   }
 });
+
+router.get("/get-all-teams", async (req, res) => {
+  try {
+    const attendees = (await AttendeeModel.find()).map((attendee) => {
+      return attendee.uid;
+    });
+    const users = (
+      await ShortlistedUserModel.find({ uid: { $in: attendees } })
+    ).map((e) => e.email);
+    var teams = [];
+    await Promise.all(
+      users.map(async (user) => {
+        const team = await TeamModel.findOne({ "team_details.email": user });
+        if (team) {
+          const isTeamLead =
+            team.team_details.filter((e) => e.team_lead === true)[0].email !=
+              null &&
+            team.team_details.filter((e) => e.team_lead === true)[0].email ===
+              user;
+          const teamDetails = isTeamLead
+            ? Array.from(
+                team.team_details
+                  .filter((e) => {
+                    return e.email !== user;
+                  })
+                  .map((e) => {
+                    return e.email;
+                  })
+              )
+            : null;
+          teams.push({
+            email: user,
+            team_id: team._id,
+            domain: team.domain,
+            do_have_team: team.team_size > 1,
+            is_team_lead: isTeamLead,
+            team_name: team.team_name,
+            team_size: team.team_size,
+            participant_1_name:
+              teamDetails != null && teamDetails.length > 0
+                ? (
+                    await ShortlistedUserModel.findOne({
+                      email: teamDetails[0],
+                    })
+                  ).first_name +
+                  " " +
+                  (
+                    await ShortlistedUserModel.findOne({
+                      email: teamDetails[0],
+                    })
+                  ).last_name
+                : null,
+            participant_1_email:
+              teamDetails != null && teamDetails.length > 0
+                ? teamDetails[0]
+                : null,
+            participant_1_phone:
+              teamDetails != null && teamDetails.length > 0
+                ? (
+                    await AttendeeModel.findOne({
+                      uid: (
+                        await ShortlistedUserModel.findOne({
+                          email: teamDetails[0],
+                        })
+                      ).uid,
+                    })
+                  )?.phone_number
+                : null,
+            participant_2_name:
+              teamDetails != null && teamDetails.length > 1
+                ? (
+                    await ShortlistedUserModel.findOne({
+                      email: teamDetails[1],
+                    })
+                  ).first_name +
+                  " " +
+                  (
+                    await ShortlistedUserModel.findOne({
+                      email: teamDetails[1],
+                    })
+                  ).last_name
+                : null,
+            participant_2_email:
+              teamDetails != null && teamDetails.length > 1
+                ? teamDetails[1]
+                : null,
+            participant_2_phone:
+              teamDetails != null && teamDetails.length > 1
+                ? (
+                    await AttendeeModel.findOne({
+                      uid: (
+                        await ShortlistedUserModel.findOne({
+                          email: teamDetails[1],
+                        })
+                      ).uid,
+                    })
+                  )?.phone_number
+                : null,
+            participant_3_name:
+              teamDetails != null && teamDetails.length > 2
+                ? (
+                    await ShortlistedUserModel.findOne({
+                      email: teamDetails[2],
+                    })
+                  ).first_name +
+                  " " +
+                  (
+                    await ShortlistedUserModel.findOne({
+                      email: teamDetails[2],
+                    })
+                  ).last_name
+                : null,
+            participant_3_email:
+              teamDetails != null && teamDetails.length > 2
+                ? teamDetails[2]
+                : null,
+            participant_3_phone:
+              teamDetails != null && teamDetails.length > 2
+                ? (
+                    await AttendeeModel.findOne({
+                      uid: (
+                        await ShortlistedUserModel.findOne({
+                          email: teamDetails[2],
+                        })
+                      ).uid,
+                    })
+                  )?.phone_number
+                : null,
+            // team_details: team.team_details,
+          });
+        } else {
+          teams.push({
+            email: user,
+          });
+        }
+      })
+    );
+    // const teams = (await TeamModel.find()).map((team) => {
+    //   return {
+    //     team_id: team._id,
+    //     team_name: team.team_name,
+    //     team_size: team.team_size,
+    //     team_details: team.team_details,
+    //     domain: team.domain,
+    //   };
+    // });
+
+    res.json({ status: true, data: Array.from(teams) });
+  } catch (error) {
+    res.status(500).json({
+      status: false,
+      message: `Unable to get data at the moment. Please try again. ${error.message}`,
+    });
+  }
+});
