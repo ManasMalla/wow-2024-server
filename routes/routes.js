@@ -290,14 +290,14 @@ router.post("/create-attendee-registration", async (req, res) => {
       });
     }
 
-    const team_details = await TeamModel.findOne({ _id: team_id });
-    if (!team_details) {
-      return res.status(400).json({
-        status: false,
-        message:
-          "Team details not found. Please create a team before registering",
-      });
-    }
+    // const team_details = await TeamModel.findOne({ _id: team_id });
+    // if (!team_details) {
+    //   return res.status(400).json({
+    //     status: false,
+    //     message:
+    //       "Team details not found. Please create a team before registering",
+    //   });
+    // }
 
     const attendee = new AttendeeModel({
       payment_utr,
@@ -310,38 +310,22 @@ router.post("/create-attendee-registration", async (req, res) => {
     });
     const dataToSave = await attendee.save();
     const email = (await ShortlistedUserModel.findOne({ uid: uid })).email;
-    const isTeamLead = team_details.team_details.filter(
-      (e) => e.email === email
-    )[0].team_lead;
-    const result = isTeamLead
-      ? {
-          attendee_id: dataToSave._id,
-          payment_utr: dataToSave.payment_utr,
-          tshirt_size: dataToSave.tshirt_size,
-          accommodation: dataToSave.accommodation,
-          agenda_domain: dataToSave.agenda_domain,
-          phone_number: dataToSave.phone_number,
-          hackathon: {
-            team_lead: team_details.team_lead,
-            team_name: team_details.team_name,
-            team_size: team_details.team_size,
-            team_details: team_details.team_details,
-            domain: team_details.domain,
-          },
-        }
-      : {
-          attendee_id: dataToSave._id,
-          payment_utr: dataToSave.payment_utr,
-          tshirt_size: dataToSave.tshirt_size,
-          accommodation: dataToSave.accommodation,
-          agenda_domain: dataToSave.agenda_domain,
-          phone_number: dataToSave.phone_number,
-          hackathon: {
-            team_lead: team_details.team_lead,
-            team_name: team_details.team_name,
-            domain: team_details.domain,
-          },
-        };
+    // const isTeamLead = team_details.team_details.filter(
+    //   (e) => e.email === email
+    // )[0].team_lead;
+    const result = {
+      attendee_id: dataToSave._id,
+      payment_utr: dataToSave.payment_utr,
+      tshirt_size: dataToSave.tshirt_size,
+      accommodation: dataToSave.accommodation,
+      agenda_domain: dataToSave.agenda_domain,
+      phone_number: dataToSave.phone_number,
+      hackathon: {
+        team_lead: team_id,
+        team_name: team_id,
+        domain: team_id,
+      },
+    };
     res.status(200).json({ status: true, data: result });
   } catch (error) {
     res.status(400).json({ status: false, message: error.message });
