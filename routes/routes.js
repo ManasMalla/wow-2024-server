@@ -320,11 +320,6 @@ router.post("/create-attendee-registration", async (req, res) => {
       accommodation: dataToSave.accommodation,
       agenda_domain: dataToSave.agenda_domain,
       phone_number: dataToSave.phone_number,
-      hackathon: {
-        team_lead: team_id,
-        team_name: team_id,
-        domain: team_id,
-      },
     };
     res.status(200).json({ status: true, data: result });
   } catch (error) {
