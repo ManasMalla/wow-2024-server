@@ -516,6 +516,8 @@ router.post("/confirm-attendee-participation", async (req, res) => {
           message: `User is already confirmed. ${email}`,
         });
       }
+      attendee.is_confirmed = true;
+      await attendee.save();
       const qrCodes = {
         email: user.email,
         name: user.first_name + " " + user.last_name,
