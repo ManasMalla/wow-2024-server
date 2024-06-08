@@ -510,7 +510,12 @@ router.post("/confirm-attendee-participation", async (req, res) => {
       const uid = user.uid;
       // const organizerCode = req.params.organizerCode;
       const attendee = await AttendeeModel.findOne({ uid: uid });
-
+      if (attendee.is_confirmed) {
+        return res.status(400).json({
+          status: false,
+          message: `User is already confirmed. ${email}`,
+        });
+      }
       const qrCodes = {
         email: user.email,
         name: user.first_name + " " + user.last_name,
@@ -518,11 +523,14 @@ router.post("/confirm-attendee-participation", async (req, res) => {
         trackOne: attendee.agenda_domain[0],
         trackTwo: attendee.agenda_domain[1],
         tshirtSize: attendee.tshirt_size,
+        isConfirmed: attendee.is_confirmed,
       };
 
       return res.json({ status: true, data: qrCodes });
     } else {
-      return res.json({ status: false, message: `User not found. ${email}` });
+      return res
+        .status(400)
+        .json({ status: false, message: `User not found. ${email}` });
     }
   } catch (e) {
     console.log(e);

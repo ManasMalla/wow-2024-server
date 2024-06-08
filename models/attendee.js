@@ -31,6 +31,10 @@ const attendeeSchema = new mongoose.Schema({
     required: true,
     type: String,
   },
+  is_confirmed: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 module.exports = mongoose.model("attendee", attendeeSchema);
