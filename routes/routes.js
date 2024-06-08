@@ -6,6 +6,7 @@ module.exports = router;
 const ShortlistedUserModel = require("../models/shortlisted-users");
 const TeamModel = require("../models/team");
 const AttendeeModel = require("../models/attendee");
+const attendee = require("../models/attendee");
 
 // API for fetching shortlisted users
 
@@ -495,6 +496,37 @@ router.get("/get-all-teams", async (req, res) => {
     res.json({ status: true, data: Array.from(teams) });
   } catch (error) {
     res.status(500).json({
+      status: false,
+      message: `Unable to get data at the moment. Please try again. ${error.message}`,
+    });
+  }
+});
+
+router.post("/confirm-attendee-participation", async (req, res) => {
+  try {
+    const email = req.body?.attendee_email;
+    if ((await ShortlistedUserModel.find({ email: email })).length > 0) {
+      const user = (await ShortlistedUserModel.find({ email: email }))[0];
+      const uid = user.uid;
+      // const organizerCode = req.params.organizerCode;
+      const attendee = await AttendeeModel.findOne({ uid: uid });
+
+      const qrCodes = {
+        email: user.email,
+        name: user.first_name + " " + user.last_name,
+        uid: user.uid,
+        trackOne: attendee.agenda_domain[0],
+        trackTwo: attendee.agenda_domain[1],
+        tshirtSize: attendee.tshirt_size,
+      };
+
+      return res.json({ status: true, data: qrCodes });
+    } else {
+      return res.json({ status: false, message: `User not found. ${email}` });
+    }
+  } catch (e) {
+    console.log(e);
+    return res.status(500).json({
       status: false,
       message: `Unable to get data at the moment. Please try again. ${error.message}`,
     });
